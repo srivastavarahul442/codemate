@@ -2,20 +2,19 @@ const express = require('express');
 const app = express();
 const port = 7070;
 
-app.use("/test",(req,res)=>{
-    res.send("Hello from test route");
-})
-
-app.use("/hello",(req,res)=>{
-    res.send("Hello from hello route");
-})
-
-app.use("/",(req,res)=>{
-    res.send("Hello world");
-})
+app.use("/user", (req, res, next) => {
+    console.log("request Handler 1");
+    // res.send("fetch data successfully 1")
+    next();
+},
+    (req, res) => {
+        console.log("request Handler 2");
+        res.send("fetch data successfully 2")
+    })
 
 
 
-app.listen(port,()=>{
+
+app.listen(port, () => {
     console.log(`server is running on port no ${port}`);
 })
