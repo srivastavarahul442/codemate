@@ -48,13 +48,21 @@ app.get("/feed", async (req, res) => {
 });
 
 app.patch("/updateUser/:id", async (req, res) => {
-  const { id } = req.params;
+  try{
+    const { id } = req.params;
   const user = await User.findById(id);
   if (!user) {
     res.send("User not found");
   }
-  const updatedUser = await User.findByIdAndUpdate(id, req.body, { new: true });
+  const updatedUser = await User.findByIdAndUpdate(id, req.body, {
+    new: true,
+    runValidators: true,
+  });
   res.json({ message: "User updated successfully", data: updatedUser });
+  }
+  catch(err){
+    res.status(400).send("somthing went wrong"+err.message);
+  }
 });
 
 app.delete("/user", async (req, res) => {
