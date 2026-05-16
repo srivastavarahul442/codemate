@@ -6,13 +6,26 @@ const port = 7070;
 
 app.use(express.json());
 
-app.post("/user", async (req, res) => {
+app.get("/user", async (req, res) => {
+  try {
+    const userEmail = req.body.emailId;
+    const user = await User.find({ emailId: userEmail });
+    if (user.length === 0) {
+      res.status(404).send("user not found");
+    }
+    res.send(user);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error fetching users", error: err.message });
+  }
+});
+
+app.post("/signup", async (req, res) => {
   try {
     const details = req.body;
     const user = new User(details);
-
     await user.save();
-
     res.status(201).json({ message: "User creataed successfully", data: user });
   } catch (err) {
     res
@@ -21,8 +34,37 @@ app.post("/user", async (req, res) => {
   }
 });
 
-app.use("/", (req, res) => {
-  res.send("Hello from /");
+app.get("/feed", async (req, res) => {
+  try {
+    const users = await User.find();
+    res
+      .status(200)
+      .json({ message: "Users fatched successfully", data: users });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error creating user", error: err.message });
+  }
+});
+
+app.patch("/updateUser/:id", async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if (!user) {
+    res.send("User not found");
+  }
+  const updatedUser = await User.findByIdAndUpdate(id, req.body, { new: true });
+  res.json({ message: "User updated successfully", data: updatedUser });
+});
+
+app.delete("/user", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const user = await User.findByIdAndDelete(userId);
+    res.send("User Deleted successfully");
+  } catch (err) {
+    res.status(400).send("somthing went wrong");
+  }
 });
 
 connectDB()
