@@ -33,6 +33,9 @@ const userSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
+      enum:{
+        values:["male","female","other"]
+      },
       validate(value) {
         if (!["male", "female", "other"].includes(value.toLowerCase())) {
           throw new Error("gender must be either male, female or other");
