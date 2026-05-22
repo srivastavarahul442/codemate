@@ -19,22 +19,6 @@ app.use("/",profileRouter)
 app.use("/",requestRouter);
 app.use("/",userRouter);
 
-
-app.get("/feed", async (req, res) => {
-  try {
-    const users = await User.find();
-    res
-      .status(200)
-      .json({ message: "Users fatched successfully", data: users });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Error creating user", error: err.message });
-  }
-});
-
-
-
 connectDB()
   .then(() => {
     console.log("Database connection established");
