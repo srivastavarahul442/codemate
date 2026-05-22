@@ -10,7 +10,7 @@ userRouter.get("/user/requests/received", userAuth, async (req, res) => {
     const connectionRequests = await ConnectionRequest.find({
       toUserId: loggedInUser._id,
       status: "interested",
-    });
+    }).populate("fromUserId",["firstName","lastName","photoUrl","age","gender","about","skills"])
 
     if (connectionRequests.length == 0) {
       return res.status(200).json({ message: "Connection request not found" });
