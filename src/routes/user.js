@@ -3,6 +3,16 @@ const { userAuth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequest");
 const userRouter = express.Router();
 
+const USER_SAFE_DATA = [
+  "firstName",
+  "lastName",
+  "photoUrl",
+  "age",
+  "gender",
+  "about",
+  "skills",
+];
+
 userRouter.get("/user/requests/received", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
@@ -10,14 +20,42 @@ userRouter.get("/user/requests/received", userAuth, async (req, res) => {
     const connectionRequests = await ConnectionRequest.find({
       toUserId: loggedInUser._id,
       status: "interested",
-    }).populate("fromUserId",["firstName","lastName","photoUrl","age","gender","about","skills"])
+    }).populate("fromUserId", USER_SAFE_DATA);
 
     if (connectionRequests.length == 0) {
       return res.status(200).json({ message: "Connection request not found" });
     }
     res.status(200).json({
-      message: "fatched all connections request",
+      message: "Fetched all connections request",
       data: connectionRequests,
+    });
+  } catch (err) {
+    res.status(400).send("Error : " + err.message);
+  }
+});
+
+userRouter.get("/user/connections", userAuth, async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+
+    const connections = await ConnectionRequest.find({
+      $or: [
+        { fromUserId: loggedInUser._id, status: "accepted" },
+        { toUserId: loggedInUser._id, status: "accepted" },
+      ],
+    })
+      .populate("fromUserId", USER_SAFE_DATA)
+      .populate("toUserId", USER_SAFE_DATA);
+
+    const data = connections.map((row) => {
+      if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {
+        return row.toUserId;
+      }
+      return row.fromUserId;
+    });
+    res.status(200).json({
+      message: "Fetched all connections",
+      data: data,
     });
   } catch (err) {
     res.status(400).send("Error : " + err.message);
