@@ -44,6 +44,7 @@ const userSchema = new mongoose.Schema(
     },
     photoUrl: {
       type: String,
+      default:"https://kristalle.com/wp-content/uploads/2020/07/dummy-profile-pic-1.jpg"
     },
     about: {
       type: String,

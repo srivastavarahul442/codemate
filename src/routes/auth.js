@@ -23,14 +23,12 @@ authRouter.post("/login", async (req, res) => {
       res.cookie("token", token, {
         expires: new Date(Date.now() + 8 * 3600000),
       });
-      res.send("login successfull");
+      res.status(200).send(user);
     } else {
       throw new Error("Invalid credential");
     }
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Error creating user", error: err.message });
+    res.status(400).send("ERROR : " + err.message);
   }
 });
 

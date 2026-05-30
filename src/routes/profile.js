@@ -9,7 +9,7 @@ profileRouter.get("/profile/view", userAuth, async (req, res) => {
   try {
     const user = req.user;
 
-    res.status(200).json({ message: "fatched User details", data: user });
+    res.status(200).send(user);
   } catch (err) {
     res.status(500).json({ message: "Error : ", error: err.message });
   }
